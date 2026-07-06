@@ -3,24 +3,9 @@ on:
   schedule:
     - cron: '*/10 * * * *'
   workflow_dispatch:
-permissions:
-  contents: write
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Ping /health
+      - name: Ping na API
         run: curl -fsS --max-time 60 --retry 2 https://fabrica-contratos-api.onrender.com/health
-      - name: Heartbeat (evita desativacao por 60 dias sem commits)
-        run: |
-          last=$(git log -1 --format=%ct -- heartbeat.txt 2>/dev/null || echo 0)
-          now=$(date +%s)
-          if [ $((now - last)) -gt 1728000 ]; then
-            date > heartbeat.txt
-            git config user.name "bot"
-            git config user.email "bot@fabrica"
-            git add heartbeat.txt
-            git commit -m "heartbeat"
-            git push
-          fi
