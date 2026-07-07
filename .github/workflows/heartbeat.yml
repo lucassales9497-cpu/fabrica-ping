@@ -1,0 +1,20 @@
+name: Heartbeat do repositorio
+on:
+  schedule:
+    - cron: '0 12 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Commit semanal (mantem o cron do ping ativo)
+        run: |
+          date -u > last-alive.txt
+          git config user.name bot
+          git config user.email bot@fabrica
+          git add last-alive.txt
+          git commit -m heartbeat
+          git push
